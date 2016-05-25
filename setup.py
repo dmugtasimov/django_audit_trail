@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from setuptools import setup
 
-__version__ = "0.1.12"
+__version__ = "0.1.12.internal.1"
 
 setup(
     name='django_audit_trail',

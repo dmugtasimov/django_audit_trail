@@ -4,6 +4,8 @@ from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
+from django.template.defaultfilters import date as date_filter
 
 from .models import AuditTrail
 from .watcher import AuditTrailWatcher
@@ -25,6 +27,12 @@ class ContentTypeFilter(SimpleListFilter):
             return queryset.filter(content_type_id=self.value())
         else:
             return queryset
+
+
+def action_time(audit_trail):
+    return date_filter(timezone.localtime(audit_trail.action_time), 'd.m.Y, H:i:s')
+
+action_time.admin_order_field = 'action_time'
 
 
 def action(audit_trail):
@@ -57,7 +65,7 @@ render_changes.allow_tags = True
 
 
 class AuditTrailAdmin(admin.ModelAdmin):
-    list_display = ('id', 'action_time', 'content_type', action, 'user', 'user_ip', 'object_repr', render_changes)
+    list_display = ('id', action_time, 'content_type', action, 'user', 'user_ip', 'object_repr', render_changes)
     list_filter = (ContentTypeFilter, 'action',)
     search_fields = ('object_id', )
     actions = None
